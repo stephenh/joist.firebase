@@ -22,10 +22,10 @@ export class Store {
    * @param basePath a 'basePath' to prefix all records in Firebase, effectively 'chroot'ing them.
    * @param useUUID if 1 or 2, will use UUIDv2 generated ids, otherwise `push()` generated ids.
    */
-  constructor(database: FirebaseApi, basePath?: string, useUUID?: number) {
+  constructor(database: FirebaseApi, options?: { basePath?: string; useUUID?: number }) {
     this.database = database;
-    this.basePath = basePath || '';
-    this._useUUID = useUUID;
+    this.basePath = (options && options.basePath) || '';
+    this._useUUID = (options && options.useUUID) || undefined;
   }
 
   public createRecord<T extends Model>(recordClass: ModelClass<T>): T {
@@ -111,7 +111,6 @@ export class Store {
 
   /**
    * Unloads the record from the store. This will cause the record to be destroyed and freed up for garbage collection.
-   * @param {Model} record
    */
   public unloadRecord(record: Model): void {
     record.metadata.willUnload();

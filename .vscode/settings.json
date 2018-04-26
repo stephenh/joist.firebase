@@ -1,0 +1,7 @@
+{
+  "mocha.requires": [
+    "ts-node/register",
+    "tsconfig-paths/register",
+  ],
+  "mocha.files.glob": "test/**/*.ts"
+}

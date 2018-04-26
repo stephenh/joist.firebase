@@ -47,11 +47,11 @@
         "trailing-comma": false,
         "export-name": false, // Disabled as exports are PascalCased and file-names-are-whatever-this-case-is-called
         "no-reserved-keywords": false, // We have model fields names type, public etc..
-        "no-require-imports": false, // Needed to import 'debug' module
         "prefer-type-cast": false, // Prefer new as syntax over angle bracket
         "no-angle-bracket-type-assertion": true,
         "no-suspicious-comment": false, // TODO: Enable this ;-)
         "no-single-line-block-comment": false,
+        "no-implicit-dependencies": false, // Tripped up by @src
         "max-func-body-length": false,
         "no-any": false,
         "completed-docs": [

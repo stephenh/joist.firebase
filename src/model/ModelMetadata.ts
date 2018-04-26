@@ -30,7 +30,8 @@ export class ModelMetadata {
   /** Returns the path to the models in firebase, e.g. /basePath/blogs. */
   public get fullModelsPath(): string {
     let path = this.store.basePath;
-    if (this.pathPrefixGroup !== null) {
+    if (this.pathPrefixGroup) {
+      log('pathPrefixGroup %s', this.pathPrefixGroup);
       const pathPrefix = this.store.pathPrefix[this.pathPrefixGroup];
       if (pathPrefix === null || pathPrefix === undefined) {
         throw Error(`Path prefix ${this.pathPrefixGroup} is not configured in the store`);
@@ -78,14 +79,14 @@ export class ModelMetadata {
   }
 
   public get modelName(): string {
-    return (this.constructor as typeof Model).modelName;
+    return (this.model.constructor as typeof Model).modelName;
   }
 
   public get modelPath(): string {
-    return (this.constructor as typeof Model).modelPath;
+    return (this.model.constructor as typeof Model).modelPath;
   }
 
-  public get pathPrefixGroup(): string | null {
-    return (this.constructor as typeof Model).pathPrefixGroup;
+  public get pathPrefixGroup(): string | undefined {
+    return (this.model.constructor as typeof Model).pathPrefixGroup;
   }
 }
