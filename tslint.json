@@ -44,13 +44,7 @@
         "no-unused-expression": [
             true
         ],
-        "trailing-comma": [
-            true,
-            {
-                "singleline": "never",
-                "multiline": "always"
-            }
-        ],
+        "trailing-comma": false,
         "export-name": false, // Disabled as exports are PascalCased and file-names-are-whatever-this-case-is-called
         "no-reserved-keywords": false, // We have model fields names type, public etc..
         "no-require-imports": false, // Needed to import 'debug' module

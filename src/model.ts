@@ -10,20 +10,18 @@ const log: debug.IDebugger = debug('ninjafire:model');
  * The promises returned by the model contain an extra 'id' attribute that is available prior to the promise being resolved.
  * This enables records to be added and removed from relationships without having to retrieve the record first
  */
-export interface ModelPromise<T> extends Promise<T> {
-  id: string;
-  modelName: string;
-}
+export class ModelPromise<T extends Model> extends Promise<T> {
+  public readonly id: string;
+  public readonly modelName: string;
+  public get instance(): T | undefined { return this._instance; }
+  private _instance?: T;
 
-class FooPromise<T extends Model> extends Promise<T> {
-  public id: string;
-  public modelName: string;
-
-    constructor(id: string, modelName: string, executor: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void) {
-        super(executor);
-      this.id=id;
-      this.modelName=modelName;
-    }
+  constructor(id: string, modelName: string, executor: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void) {
+    super(executor);
+    this.id = id;
+    this.modelName = modelName;
+    this.then(i => this._instance = i);
+  }
 }
 
 export interface ModelClass<T> {
@@ -46,9 +44,6 @@ export abstract class Model {
   public static pathPrefixGroup: string | null = null;
 
   public id: string;
-  public isValid: boolean = false;
-  public isLoading: boolean = false; // Always false on the model itself, true on the wrapped promise.
-  public isSaving: boolean = false;
   public isNew: boolean = false;
   public isDeleted: boolean = false;
 
@@ -122,7 +117,7 @@ export abstract class Model {
 
   public _pathsToSave(parentPath?: string): { [key: string]: number | string | null } {
     return {};
-}
+  }
 
 
   /**
@@ -168,20 +163,10 @@ export abstract class Model {
     return val[attribute];
   }
 
-  /**
-   * Record will start saving
-   * Called by the store
-   */
-
-  public _willSave(): void {
-    this.isSaving = true;
-  }
-
   /** Record completed saving. Called by the store. */
   public async _didSave(): Promise<void> {
     // Ensure this record is linked to firebase
     await this.store._linkToFirebase(this);
-    this.isSaving = false;
     this.isNew = false;
     // Clear local attributes as change has been saved
     this._localAttributes = {};

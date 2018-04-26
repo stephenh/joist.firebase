@@ -46,10 +46,13 @@ export class Store {
   public createRecord<T extends Model>(recordClass: ModelClass<T>): T {
     // The constructor will automatically assign a v4 uuid if an id was not provided
     const record: T = new recordClass(this);
-    record.isValid = true;
     record.isNew = true;
-    const p = Promise.resolve(record);
-    const mp = Object.assign(p, { id: record.id, modelName: record.modelName });
+    log('created new record %s:%d', recordClass, record.id);
+    // Create an immediately-resolved promise so we can store it in our active records
+    const mp = new ModelPromise<T>(
+      record.id,
+      record.modelName,
+      (resolve, reject) => resolve(record));
     this.storeActiveRecord(mp);
     return record;
   }
@@ -75,10 +78,7 @@ export class Store {
     log(`peeking for existing record ${id}`);
     const mp = this.retrieveActiveRecord(recordClass, id);
     if (mp) {
-      let instance: T | undefined;
-      // If the promise is resolved, this will do assignment immediately
-      mp.then(record => instance = record as T);
-      return instance;
+      return mp.instance;
     } else {
       return undefined;
     }
@@ -99,7 +99,7 @@ export class Store {
     const ref = this.database.ref(path);
     record._ref = ref;
 
-    const p = new Promise<T>((resolve, reject) => {
+    return new ModelPromise<T>(record.id, record.modelName, (resolve, reject) => {
       ref.on('value', (dataSnapshot: DataSnapshot | null) => {
         log(`got data for ${record.id}`);
         const result: any = dataSnapshot ? dataSnapshot.val() : null;
@@ -114,7 +114,6 @@ export class Store {
               reject(`record not found for key ${ref.key}`);
             }
           }
-          record.isValid = true;
           resolve(record);
         } else {
           log(`ignoring data received form ${record.id} that is no longer an active record`);
@@ -122,7 +121,6 @@ export class Store {
         }
       });
     });
-    return Object.assign(p, { id: record.id, modelName: record.modelName });
   }
 
   /**
@@ -140,14 +138,17 @@ export class Store {
     const updates = {};
     Object.keys(this._activeRecords).map(modelName => {
       Object.keys(this._activeRecords[modelName]).map(id => {
-        const record = this._activeRecords[modelName][id];
-        // Save all records other than embedded ones, which will be saved when the containing record is saved
-        if (!record.embedded) {
-          recordsToSave.push(record);
+        const mp = this._activeRecords[modelName][id];
+        if (mp.instance) {
+          const record = mp.instance;
+          // Save all records other than embedded ones, which will be saved when the containing record is saved
+          if (!record.embedded) {
+            recordsToSave.push(record);
+          }
         }
       });
     });
-    await this.saveRecords(recordsToSave);
+    return this.saveRecords(recordsToSave);
   }
 
   /**
@@ -161,21 +162,17 @@ export class Store {
     while (recordsToSave.length > 0) {
       const recordToSave: Model = recordsToSave[0]; // Could just shift here but typescript thinks it might be null if we do
       recordsToSave.shift();
-      recordToSave._willSave();
       Object.assign(updates, recordToSave._pathsToSave());
       // Add atomically linked records to list of records to save
       recordToSave._atomicallyLinked.map(linkedRecord => {
         if (!seenRecords.includes(linkedRecord)) {
           recordsToSave.push(linkedRecord);
           seenRecords.push(linkedRecord);
-          linkedRecord._willSave();
         }
       });
     }
     await this._updatePaths(updates);
-    await Promise.all(seenRecords.map(async (savedRecord: Model) => {
-      await savedRecord._didSave();
-    }));
+    await Promise.all(seenRecords.map(r => r._didSave()));
   }
 
   /**
