@@ -3,13 +3,23 @@
         "module": "commonjs",
         "sourceMap": true,
         "target": "es2015",
-        "lib": [ "es2016" ],
+        "baseUrl": ".",
+        "paths": {
+            "@src/*": [
+                "src/*"
+            ]
+        },
+        "lib": [
+            "es2016"
+        ],
         "moduleResolution": "node",
         "strict": true,
         "declaration": true,
         "rootDir": ".",
         "outDir": "./dist",
-        "typeRoots": [ "./node_modules/@types" ],
+        "typeRoots": [
+            "./node_modules/@types"
+        ],
         "watch": true
     },
     "exclude": [
