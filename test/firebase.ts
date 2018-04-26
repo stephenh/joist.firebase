@@ -4,9 +4,9 @@ import * as admin from 'firebase-admin';
 import { FirebaseApi } from '../src/firebase';
 
 // show that each firebase API can type-check to our abstraction layer
-declare var db1: ReturnType<typeof firebase.database>;
-declare var db2: ReturnType<typeof admin.database>;
+const db1: ReturnType<typeof firebase.database> | undefined = null;
+const db2: ReturnType<typeof admin.database> | undefined = null;
 
-declare var api: FirebaseApi;
+let api: FirebaseApi | undefined;
 api = db1;
 api = db2;
