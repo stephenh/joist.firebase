@@ -1,10 +1,9 @@
 
-import { PrimitiveEntity } from './PrimitiveEntity';
 import { Store } from '@src/model';
-import { Mock } from 'firemock';
 import { expect } from 'chai';
+import { Mock } from 'firemock';
 import { log } from '../';
-import 'mocha';
+import { PrimitiveEntity } from './PrimitiveEntity';
 
 describe('PrimitiveEntity', () => {
   it('should be constructable directly without an id', () => {

@@ -1,6 +1,6 @@
 
-import { Model, Store, log } from './';
 import { Reference } from '../firebase';
+import { log, Model, Store } from './';
 
 /**
  * All of the ORM-related metadata for a given instance.
@@ -15,8 +15,8 @@ export class ModelMetadata {
   public isNew: boolean = false;
   public isDeleted: boolean = false;
   public ref?: Reference;
-  public remoteAttributes: { [key: string]: any; } = {}; // The state of the object in Firebase (as last seen)
-  public localAttributes: { [key: string]: any; } = {}; // Any local attribute changes that have not yet been submitted
+  public remoteAttributes: { [key: string]: any } = {}; // The state of the object in Firebase (as last seen)
+  public localAttributes: { [key: string]: any } = {}; // Any local attribute changes that have not yet been submitted
   public atomicallyLinked: Model[] = []; // Other records that will be saved when this record is saved
   public embeddedRecords: { [attribute: string]: { [id: string]: Model } } = {}; // Any embedded records that have been accessed via their hasMany or belongsTo relationship - This is used to track future updates
   public embeddedIn: Model | null = null; // The record this embedded record is attached to
@@ -38,7 +38,7 @@ export class ModelMetadata {
       }
       path += pathPrefix;
     }
-    path += '/' + this.modelPath;
+    path += `/${this.modelPath}`;
     return path;
   }
 

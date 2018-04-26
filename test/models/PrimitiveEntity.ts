@@ -1,5 +1,4 @@
 
-
 import { Data, Model, ModelMetadata, Store } from '@src/model';
 
 export class PrimitiveEntity extends Model {

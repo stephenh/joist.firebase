@@ -8,7 +8,7 @@ export type PropertyNames<T> = { [K in keyof T]: T[K] extends Function ? never :
 export type NotInternalNames<T> = { [K in keyof T]: T[K] extends ModelMetadata ? never : K }[keyof T];
 
 // And ignore the id property
-export type NotId<T> = { [K in keyof T]: K extends "id" ? never : K }[keyof T];
+export type NotId<T> = { [K in keyof T]: K extends 'id' ? never : K }[keyof T];
 
 // Add back id but as an optional parameter
 export type Data<T> = Pick<T, PropertyNames<T> & NotInternalNames<T> & NotId<T>> & { id?: string };

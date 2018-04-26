@@ -1,8 +1,8 @@
 
-import { PrimitiveEntity } from './PrimitiveEntity';
 import { Store } from '@src/model';
-import { Mock } from 'firemock';
 import { expect } from 'chai';
+import { Mock } from 'firemock';
+import { PrimitiveEntity } from './PrimitiveEntity';
 
 describe('Model', () => {
   it('should get paths right', () => {
