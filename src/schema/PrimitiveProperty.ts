@@ -1,4 +1,5 @@
 
+import { Model } from '@src/model';
 import { Property } from '@src/schema';
 
 export class PrimitiveProperty implements Property {
@@ -8,10 +9,11 @@ export class PrimitiveProperty implements Property {
     this.name = name.toString();
   }
 
-  public get(instance: any): any {
-    return null;
+  public get(instance: Model): any {
+    return instance.metadata.get(this.name);
   }
 
-  public set(instance: any, value: any): void {
+  public set(instance: Model, value: any): void {
+    instance.metadata.set(this.name, value);
   }
 }

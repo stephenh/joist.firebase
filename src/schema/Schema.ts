@@ -1,6 +1,8 @@
 
 import { Model, ModelClass } from '@src/model';
-import { log, Property } from '@src/schema';
+import { log as parentLog, Property } from '@src/schema';
+
+const log = parentLog.child('schema');
 
 export class Schema {
   public properties: Property[] = [];

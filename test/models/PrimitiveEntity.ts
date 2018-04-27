@@ -13,11 +13,11 @@ function property(): PropertyDecorator {
     Object.defineProperty(proto, name, {
       get: function (): any {
         // tslint:disable-next-line:no-invalid-this
-        return prop.get(this);
+        return prop.get(this as any);
       },
       set: function (value: any): any {
         // tslint:disable-next-line:no-invalid-this
-        prop.set(this, value);
+        prop.set(this as any, value);
       }
     });
   };

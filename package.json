@@ -45,7 +45,7 @@
   "scripts": {
     "env": "env",
     "test": "mocha -r ts-node/register -r tsconfig-paths/register 'test/**/*.ts'",
-    "test-one": "env 'DEBUG=ninjafire:*' mocha -r ts-node/register -r tsconfig-paths/register",
+    "test-one": "env 'DEBUG=joist:*' mocha -r ts-node/register -r tsconfig-paths/register",
     "debug": "node --inspect-brk node_modules/.bin/mocha -r ts-node/register -r tsconfig-paths/register 'test/**/*.ts'",
     "build": "tsc",
     "main": "dist/index.js",

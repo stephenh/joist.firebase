@@ -1,6 +1,6 @@
 
-import * as debug from 'debug';
-export const log: debug.IDebugger = debug('ninjafire:model');
+import { Log, log as parentLog } from '../';
+export const log = parentLog.child('model');
 
 export { Data } from './Data';
 export { Model, ModelClass } from './Model';

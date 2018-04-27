@@ -1,6 +1,8 @@
 
 import { Reference } from '../firebase';
-import { log, Model, Store } from './';
+import { log as parentLog, Model, Store } from './';
+
+const log = parentLog.child('metadata');
 
 /**
  * All of the ORM-related metadata for a given instance.
@@ -26,7 +28,6 @@ export class ModelMetadata {
     this.model = model;
   }
 
-
   /** Returns the path to the models in firebase, e.g. /basePath/blogs. */
   public get fullModelsPath(): string {
     let path = this.store.basePath;
@@ -49,6 +50,17 @@ export class ModelMetadata {
 
   public pathsToSave(parentPath?: string): { [key: string]: number | string | null } {
     return {};
+  }
+
+  public get(name: string): any {
+    const value = this.localAttributes[name];
+    log('Get %s:%s.%s as %s', this.modelName, this.model.id, name, value);
+    return value;
+  }
+
+  public set(name: string, value: any): void {
+    log('Set %s:%s.%s to %s', this.modelName, this.model.id, name, value);
+    this.localAttributes[name] = value;
   }
 
   public setAttributesFrom(object: { [key: string]: any }): void {
