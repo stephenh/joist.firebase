@@ -17,4 +17,8 @@ export class ModelPromise<T extends Model> extends Promise<T> {
     this.modelName = modelName;
     this.then(i => this._instance = i);
   }
+
+  public toString(): string {
+    return `${this.modelName}#${this.id} ${this._instance === undefined ? 'pending' : 'resolved'}`;
+  }
 }

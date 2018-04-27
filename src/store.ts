@@ -202,14 +202,14 @@ export class Store {
     }
   }
 
-  private storeActiveRecord(record: ModelPromise<Model>): void {
-    const id: string = record.id;
-    const modelName: string = record.modelName;
-    log('going to store %s:%s', modelName, id);
+  private storeActiveRecord(promise: ModelPromise<Model>): void {
+    const id = promise.id;
+    const modelName = promise.modelName;
+    log('Storing %s', promise);
     if (!(modelName in this._activeRecords)) {
       this._activeRecords[modelName] = {};
     }
-    this._activeRecords[modelName][id] = record;
+    this._activeRecords[modelName][id] = promise;
   }
 
   private retrieveActiveRecord<T extends Model>(recordClass: ModelClass<T>, id: string): ModelPromise<T> | undefined {
