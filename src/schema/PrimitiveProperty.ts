@@ -10,10 +10,10 @@ export class PrimitiveProperty implements Property {
   }
 
   public get(instance: Model): any {
-    return instance.metadata.get(this.name);
+    return instance.instanceData.get(this.name);
   }
 
   public set(instance: Model, value: any): void {
-    instance.metadata.set(this.name, value);
+    instance.instanceData.set(this.name, value);
   }
 }

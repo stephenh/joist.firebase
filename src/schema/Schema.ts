@@ -12,6 +12,10 @@ export class Schema {
     if (proto instanceof Function) {
       proto = proto.prototype;
     }
+    // calls like getSchema(fooEntity) pass the instance
+    if (proto instanceof Model) {
+      proto = Object.getPrototypeOf(proto);
+    }
     if (proto.schema === undefined) {
       log('Creating a new schema for %o', proto);
       const schema = new Schema();

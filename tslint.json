@@ -12,7 +12,10 @@
         "no-conditional-assignment": true,
         "no-consecutive-blank-lines": false,
         "no-console": true,
-        "semicolon": [ true, "always" ],
+        "semicolon": [
+            true,
+            "always"
+        ],
         "quotemark": [
             true,
             "single",
@@ -55,6 +58,7 @@
         "no-submodule-imports": false,
         "no-import-side-effect": false,
         "no-parameter-reassignment": false,
+        "no-backbone-get-set-outside-model": false,
         "max-func-body-length": false,
         "no-any": false,
         "completed-docs": [

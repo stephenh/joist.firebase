@@ -7,6 +7,16 @@ import { Data, Model, ModelClass, ModelPromise } from './model';
 
 const log = parentLog.child('store');
 
+// The data we'll upload to firebase, e.g. ref('/').update(paths)
+export class Paths extends Map<string, string | number | null> {
+  /** Helper function for nicer assertions. */
+  public toObject(): any {
+    const o: any = {};
+    this.forEach((v, k) => o[k] = v);
+    return o;
+  }
+}
+
 export class Store {
 
   public basePath: string;
@@ -32,12 +42,12 @@ export class Store {
   public createRecord<T extends Model>(recordClass: ModelClass<T>): T {
     // The constructor will automatically assign a v4 uuid if an id was not provided
     const record: T = new recordClass(this, {} as any as Data<T>);
-    record.metadata.isNew = true;
+    record.instanceData.isNew = true;
     log('created new record %s:%d', recordClass, record.id);
     // Create an immediately-resolved promise so we can store it in our active records
     const mp = new ModelPromise<T>(
       record.id,
-      record.metadata.modelName,
+      record.instanceData.modelName,
       (resolve, reject) => resolve(record));
     this.storeActiveRecord(mp);
     return record;
@@ -76,12 +86,12 @@ export class Store {
    */
   public _linkToFirebase<T extends Model>(record: T): ModelPromise<T> {
     // If the record is already has an active reference then stop listening to further updates
-    const md = record.metadata;
+    const md = record.instanceData;
     if (md.ref !== undefined && md.ref !== null) {
       md.ref.off();
     }
 
-    const path: string = record.metadata.fullInstancePath;
+    const path: string = record.instanceData.fullInstancePath;
     log(`looking for record at path ${path}`);
     const ref = this.database.ref(path);
     md.ref = ref;
@@ -114,8 +124,8 @@ export class Store {
    * Unloads the record from the store. This will cause the record to be destroyed and freed up for garbage collection.
    */
   public unloadRecord(record: Model): void {
-    record.metadata.willUnload();
-    delete this._activeRecords[record.metadata.modelName][record.id];
+    record.instanceData.willUnload();
+    delete this._activeRecords[record.instanceData.modelName][record.id];
   }
 
   /** Saves all records atomically. */
@@ -144,11 +154,11 @@ export class Store {
     while (recordsToSave.length > 0) {
       const recordToSave: Model = recordsToSave[0]; // Could just shift here but typescript thinks it might be null if we do
       recordsToSave.shift();
-      const paths = recordToSave.metadata.pathsToSave();
+      const paths = recordToSave.instanceData.pathsToSave();
       log('Adding %s updates %o', recordToSave, paths);
       Object.assign(updates, paths);
       // Add atomically linked records to list of records to save
-      recordToSave.metadata.atomicallyLinked.map(linkedRecord => {
+      recordToSave.instanceData.atomicallyLinked.map(linkedRecord => {
         if (!seenRecords.includes(linkedRecord)) {
           recordsToSave.push(linkedRecord);
           seenRecords.push(linkedRecord);
@@ -156,7 +166,7 @@ export class Store {
       });
     }
     await this._updatePaths(updates);
-    await Promise.all(seenRecords.map(r => r.metadata.didSave()));
+    await Promise.all(seenRecords.map(r => r.instanceData.didSave()));
   }
 
   /**

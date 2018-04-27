@@ -1,4 +1,6 @@
 
+import { Schema } from '@src/schema';
+import { Paths } from '@src/store';
 import { Reference } from '../firebase';
 import { log as parentLog, Model, Store } from './';
 
@@ -22,10 +24,12 @@ export class InstanceData {
   public atomicallyLinked: Model[] = []; // Other records that will be saved when this record is saved
   public embeddedRecords: { [attribute: string]: { [id: string]: Model } } = {}; // Any embedded records that have been accessed via their hasMany or belongsTo relationship - This is used to track future updates
   public embeddedIn: Model | null = null; // The record this embedded record is attached to
+  private readonly schema: Schema;
 
   constructor(store: Store, model: Model) {
     this.store = store;
     this.model = model;
+    this.schema = Schema.getSchema(model);
   }
 
   /** Returns the path to the models in firebase, e.g. /basePath/blogs. */
@@ -48,8 +52,13 @@ export class InstanceData {
     return `${this.fullModelsPath}/${this.model.id}`;
   }
 
-  public pathsToSave(parentPath?: string): { [key: string]: number | string | null } {
-    return {};
+  public pathsToSave(parentPath?: string): Paths {
+    const paths = new Paths();
+    this.schema.properties.forEach(p => {
+      const serDeValue = this.localAttributes[p.name];
+      paths.set(`${this.fullInstancePath}/${p.name}`, serDeValue);
+    });
+    return paths;
   }
 
   public get(name: string): any {
