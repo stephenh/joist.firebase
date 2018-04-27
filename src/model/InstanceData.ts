@@ -52,13 +52,11 @@ export class InstanceData {
     return `${this.fullModelsPath}/${this.model.id}`;
   }
 
-  public pathsToSave(parentPath?: string): Paths {
-    const paths = new Paths();
+  public addPaths(paths: Paths, parentPath?: string): void {
     this.schema.properties.forEach(p => {
       const serDeValue = this.localAttributes[p.name];
       paths.set(`${this.fullInstancePath}/${p.name}`, serDeValue);
     });
-    return paths;
   }
 
   public get(name: string): any {
