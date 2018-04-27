@@ -28,8 +28,9 @@ export class PrimitiveEntity extends Model {
   public static modelName: string = 'primitive_entity';
   public static modelPath: string = 'primitive_entities';
 
-  @property()
-  public name: string = '';
+  @property() public firstName: string = '';
+
+  @property() public lastName: string = '';
 
   constructor(store: Store, data: Data<PrimitiveEntity>) {
     super(store, data);

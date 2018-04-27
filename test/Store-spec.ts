@@ -9,8 +9,8 @@ describe('Store', () => {
   it('should save simple entities', () => {
     const db = new Mock().useDeterministicIds();
     const store = new Store(db);
-    const pe = new PrimitiveEntity(store, { name: 'name1' });
+    const pe = new PrimitiveEntity(store, { firstName: 'f', lastName: 'l' });
     pe.save();
-    expect(db.db).to.deep.eq({ primitive_entities: { id1: { name: 'name1' } } });
+    expect(db.db).to.deep.eq({ primitive_entities: { id1: { firstName: 'f', lastName: 'l' } } });
   });
 });
