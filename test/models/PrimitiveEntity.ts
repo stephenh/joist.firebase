@@ -1,5 +1,5 @@
 
-import { Data, log, Model, ModelMetadata, Store } from '@src/model';
+import { Data, InstanceData, log, Model, Store } from '@src/model';
 import { PrimitiveProperty, Schema } from '@src/schema';
 import 'reflect-metadata';
 

@@ -1,5 +1,5 @@
 
-import { Data, log, ModelMetadata, Store } from './';
+import { Data, InstanceData, log, Store } from './';
 
 export interface ModelClass<T> {
   modelName: string;
@@ -15,23 +15,24 @@ export abstract class Model {
   public static pathPrefixGroup: string | undefined;
 
   public readonly id: string;
-  public readonly metadata: ModelMetadata;
+  // data would be a nicer/shorter name but more likely to collide with entity fields
+  public readonly instanceData: InstanceData;
 
   constructor(store: Store, data: Data<Model>) {
-    this.metadata = new ModelMetadata(store, this);
-    this.id = data.id || store.newKey(this.metadata.fullModelsPath);
-    log('Instantiated %s:%s', this.metadata.modelName, this.id);
+    this.instanceData = new InstanceData(store, this);
+    this.id = data.id || store.newKey(this.instanceData.fullModelsPath);
+    log('Instantiated %s:%s', this.instanceData.modelName, this.id);
   }
 
   public async save(): Promise<void> {
-    await this.metadata.store._save(this);
+    await this.instanceData.store._save(this);
   }
 
   public async unloadRecord(): Promise<void> {
-    await this.metadata.store.unloadRecord(this);
+    await this.instanceData.store.unloadRecord(this);
   }
 
   public toString(): string {
-    return `${this.metadata.modelName}:${this.id}`;
+    return `${this.instanceData.modelName}:${this.id}`;
   }
 }

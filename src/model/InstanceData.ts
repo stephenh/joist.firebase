@@ -10,7 +10,7 @@ const log = parentLog.child('metadata');
  * These methods should be considered internal implementation details
  * and not called by client code.
  */
-export class ModelMetadata {
+export class InstanceData {
 
   public readonly model: Model;
   public readonly store: Store;
