@@ -16,6 +16,7 @@
   "dependencies": {
     "debug": "^3.1.0",
     "postinstall-build": "^5.0.1",
+    "reflect-metadata": "^0.1.12",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
@@ -44,6 +45,7 @@
   "scripts": {
     "env": "env",
     "test": "mocha -r ts-node/register -r tsconfig-paths/register 'test/**/*.ts'",
+    "test-one": "env 'DEBUG=ninjafire:*' mocha -r ts-node/register -r tsconfig-paths/register",
     "debug": "node --inspect-brk node_modules/.bin/mocha -r ts-node/register -r tsconfig-paths/register 'test/**/*.ts'",
     "build": "tsc",
     "main": "dist/index.js",
