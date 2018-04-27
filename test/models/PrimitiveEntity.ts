@@ -1,6 +1,6 @@
 
 import { Data, log, Model, ModelMetadata, Store } from '@src/model';
-import { PrimitiveProperty, Schema } from '@src/model/Schema';
+import { PrimitiveProperty, Schema } from '@src/schema';
 import 'reflect-metadata';
 
 function property(): PropertyDecorator {
@@ -17,7 +17,7 @@ function property(): PropertyDecorator {
       },
       set: function (value: any): any {
         // tslint:disable-next-line:no-invalid-this
-        prop.set(this as any, value);
+        prop.set(this, value);
       }
     });
   };

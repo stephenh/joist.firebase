@@ -1,29 +1,6 @@
 
 import { Model, ModelClass } from '@src/model';
-
-import * as debug from 'debug';
-export const log: debug.IDebugger = debug('ninjafire:schema');
-
-export interface Property {
-  name: string;
-  get(instance: any): any;
-  set(instance: any, value: any): void;
-}
-
-export class PrimitiveProperty implements Property {
-  public name: string;
-
-  constructor(name: string | symbol, type: string) {
-    this.name = name.toString();
-  }
-
-  public get(instance: any): any {
-    return null;
-  }
-
-  public set(instance: any, value: any): void {
-  }
-}
+import { log, Property } from '@src/schema';
 
 export class Schema {
   public properties: Property[] = [];

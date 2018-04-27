@@ -1,6 +1,6 @@
 
 import { Store } from '@src/model';
-import { Schema } from '@src/model/Schema';
+import { Schema } from '@src/schema';
 import { expect } from 'chai';
 import { Mock } from 'firemock';
 import { PrimitiveEntity } from './PrimitiveEntity';
