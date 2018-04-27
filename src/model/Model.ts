@@ -21,7 +21,8 @@ export abstract class Model {
   constructor(store: Store, data: Data<Model>) {
     this.instanceData = new InstanceData(store, this);
     this.id = data.id || store.newKey(this.instanceData.fullModelsPath);
-    log('Instantiated %s:%s', this.instanceData.modelName, this.id);
+    Object.assign(this, data);
+    log('Instantiated %s', this);
   }
 
   public async save(): Promise<void> {

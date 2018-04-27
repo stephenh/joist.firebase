@@ -1,6 +1,6 @@
 
 import { Data, InstanceData, log, Model, Store } from '@src/model';
-import { PrimitiveProperty, Schema } from '@src/schema';
+import { defaultValue, PrimitiveProperty, Schema } from '@src/schema';
 import 'reflect-metadata';
 
 function property(): PropertyDecorator {
@@ -28,12 +28,11 @@ export class PrimitiveEntity extends Model {
   public static modelName: string = 'primitive_entity';
   public static modelPath: string = 'primitive_entities';
 
-  @property() public firstName: string = '';
+  @property() public firstName: string = defaultValue.s;
 
-  @property() public lastName: string = '';
+  @property() public lastName: string = defaultValue.s;
 
   constructor(store: Store, data: Data<PrimitiveEntity>) {
     super(store, data);
-    Object.assign(this, data);
   }
 }

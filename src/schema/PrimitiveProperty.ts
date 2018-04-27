@@ -1,6 +1,6 @@
 
 import { Model } from '@src/model';
-import { Property } from '@src/schema';
+import { defaultValue, Property } from '@src/schema';
 
 export class PrimitiveProperty implements Property {
   public name: string;
@@ -14,6 +14,9 @@ export class PrimitiveProperty implements Property {
   }
 
   public set(instance: Model, value: any): void {
+    if (value === defaultValue.s) {
+      return;
+    }
     instance.instanceData.set(this.name, value);
   }
 }
