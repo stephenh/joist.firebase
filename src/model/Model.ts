@@ -34,6 +34,6 @@ export abstract class Model {
   }
 
   public toString(): string {
-    return `${this.instanceData.modelName}:${this.id}`;
+    return `${this.instanceData.modelName}#${this.id}`;
   }
 }

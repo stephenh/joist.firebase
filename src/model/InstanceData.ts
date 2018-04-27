@@ -63,12 +63,12 @@ export class InstanceData {
 
   public get(name: string): any {
     const value = this.localAttributes[name];
-    log('Get %s:%s.%s as %s', this.modelName, this.model.id, name, value);
+    log('Get %s.%s as %s', this.model, name, value);
     return value;
   }
 
   public set(name: string, value: any): void {
-    log('Set %s:%s.%s to %s', this.modelName, this.model.id, name, value);
+    log('Set %s.%s to %s', this.model, name, value);
     this.localAttributes[name] = value;
   }
 
