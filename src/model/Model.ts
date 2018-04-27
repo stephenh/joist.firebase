@@ -3,7 +3,7 @@ import { Data, log, ModelMetadata, Store } from './';
 
 export interface ModelClass<T> {
   modelName: string;
-  new(store: Store, id?: string): T;
+  new(store: Store, data: Data<T>): T;
 }
 
 /** Base class for our model entities. */

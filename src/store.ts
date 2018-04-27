@@ -2,7 +2,7 @@
 import * as debug from 'debug';
 import { v1, v4 } from 'uuid';
 import { DataSnapshot, FirebaseApi, Reference } from './firebase';
-import { Model, ModelClass, ModelPromise } from './model';
+import { Data, Model, ModelClass, ModelPromise } from './model';
 
 const log: debug.IDebugger = debug('ninjafire:store');
 
@@ -30,7 +30,7 @@ export class Store {
 
   public createRecord<T extends Model>(recordClass: ModelClass<T>): T {
     // The constructor will automatically assign a v4 uuid if an id was not provided
-    const record: T = new recordClass(this);
+    const record: T = new recordClass(this, {} as any as Data<T>);
     record.metadata.isNew = true;
     log('created new record %s:%d', recordClass, record.id);
     // Create an immediately-resolved promise so we can store it in our active records
@@ -49,7 +49,7 @@ export class Store {
       return activeRecord;
     }
     log('record not found for %d going to look it up', id);
-    const record: T = new recordClass(this, id);
+    const record: T = new recordClass(this, { id } as any as Data<T>);
     const mp = this._linkToFirebase(record);
     this.storeActiveRecord(mp);
     return mp;

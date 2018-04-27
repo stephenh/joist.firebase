@@ -52,6 +52,9 @@
         "no-suspicious-comment": false, // TODO: Enable this ;-)
         "no-single-line-block-comment": false,
         "no-implicit-dependencies": false, // Tripped up by @src
+        "no-submodule-imports": false,
+        "no-import-side-effect": false,
+        "no-parameter-reassignment": false,
         "max-func-body-length": false,
         "no-any": false,
         "completed-docs": [
