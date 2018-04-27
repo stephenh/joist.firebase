@@ -13,6 +13,6 @@ describe('InstanceData', () => {
     const pe = new PrimitiveEntity(store, { name: 'name1' });
     const paths = new Paths();
     pe.instanceData.addPaths(paths);
-    expect(paths.toObject()).to.be.eq({ '/primitive_entities/1/name': 'name1' });
+    expect(paths.toObject()).to.deep.eq({ '/primitive_entities/id1/name': 'name1' });
   });
 });

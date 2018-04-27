@@ -4,7 +4,7 @@ import { Paths } from '@src/store';
 import { Reference } from '../firebase';
 import { log as parentLog, Model, Store } from './';
 
-const log = parentLog.child('metadata');
+const log = parentLog.child('instanceData');
 
 /**
  * All of the ORM-related metadata for a given instance.
@@ -54,8 +54,10 @@ export class InstanceData {
 
   public addPaths(paths: Paths, parentPath?: string): void {
     this.schema.properties.forEach(p => {
+      const key = `${this.fullInstancePath}/${p.name}`;
       const serDeValue = this.localAttributes[p.name];
-      paths.set(`${this.fullInstancePath}/${p.name}`, serDeValue);
+      log('Adding %s = %s', key, serDeValue);
+      paths.set(key, serDeValue);
     });
   }
 

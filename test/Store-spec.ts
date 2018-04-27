@@ -7,10 +7,10 @@ import { PrimitiveEntity } from './models/PrimitiveEntity';
 
 describe('Store', () => {
   it('should save simple entities', () => {
-    const db = new Mock();
+    const db = new Mock().useDeterministicIds();
     const store = new Store(db);
-    const pe = new PrimitiveEntity(store, { id: '1', name: 'name1' });
+    const pe = new PrimitiveEntity(store, { name: 'name1' });
     pe.save();
-    expect(db.db).to.eq({ foo: 'bar' });
+    expect(db.db).to.deep.eq({ primitive_entities: { id1: { name: 'name1' } } });
   });
 });

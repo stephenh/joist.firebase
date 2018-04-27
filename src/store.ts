@@ -150,13 +150,11 @@ export class Store {
   public async saveRecords(records: Model[]): Promise<void> {
     const recordsToSave: Model[] = records.slice();
     const seenRecords: Model[] = records.slice();
-    const updates = {};
+    const paths = new Paths();
     while (recordsToSave.length > 0) {
       const recordToSave: Model = recordsToSave[0]; // Could just shift here but typescript thinks it might be null if we do
       recordsToSave.shift();
-      const paths = recordToSave.instanceData.pathsToSave();
-      log('Adding %s updates %o', recordToSave, paths);
-      Object.assign(updates, paths);
+      recordToSave.instanceData.addPaths(paths);
       // Add atomically linked records to list of records to save
       recordToSave.instanceData.atomicallyLinked.map(linkedRecord => {
         if (!seenRecords.includes(linkedRecord)) {
@@ -165,7 +163,7 @@ export class Store {
         }
       });
     }
-    await this._updatePaths(updates);
+    await this.updatePaths(paths.toObject());
     await Promise.all(seenRecords.map(r => r.instanceData.didSave()));
   }
 
@@ -194,9 +192,8 @@ export class Store {
     }
   }
 
-  private async _updatePaths(updates: { [path: string]: any }): Promise<void> {
-    log('performing firebase updates');
-    log(updates);
+  private async updatePaths(updates: { [path: string]: any }): Promise<void> {
+    log('Performing firebase updates: %o', updates);
     try {
       await this.database.ref('/').update(updates);
     } catch (error) {
