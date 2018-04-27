@@ -30,4 +30,8 @@ export abstract class Model {
   public async unloadRecord(): Promise<void> {
     await this.metadata.store.unloadRecord(this);
   }
+
+  public toString(): string {
+    return `${this.metadata.modelName}:${this.id}`;
+  }
 }

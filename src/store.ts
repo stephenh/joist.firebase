@@ -1,10 +1,11 @@
 
 import * as debug from 'debug';
 import { v1, v4 } from 'uuid';
+import { log as parentLog } from './';
 import { DataSnapshot, FirebaseApi, Reference } from './firebase';
 import { Data, Model, ModelClass, ModelPromise } from './model';
 
-const log: debug.IDebugger = debug('ninjafire:store');
+const log = parentLog.child('store');
 
 export class Store {
 
@@ -143,7 +144,9 @@ export class Store {
     while (recordsToSave.length > 0) {
       const recordToSave: Model = recordsToSave[0]; // Could just shift here but typescript thinks it might be null if we do
       recordsToSave.shift();
-      Object.assign(updates, recordToSave.metadata.pathsToSave());
+      const paths = recordToSave.metadata.pathsToSave();
+      log('Adding %s updates %o', recordToSave, paths);
+      Object.assign(updates, paths);
       // Add atomically linked records to list of records to save
       recordToSave.metadata.atomicallyLinked.map(linkedRecord => {
         if (!seenRecords.includes(linkedRecord)) {
