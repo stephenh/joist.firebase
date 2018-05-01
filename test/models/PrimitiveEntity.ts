@@ -32,7 +32,13 @@ export class PrimitiveEntity extends Model {
 
   @property() public lastName: string = defaultValue.s;
 
+  @property() public age: number = defaultValue.n;
+
   constructor(store: Store, data: Data<PrimitiveEntity>) {
     super(store, data);
+  }
+
+  public static newTestInstance(store: Store): PrimitiveEntity {
+    return new PrimitiveEntity(store, { firstName: 'f', lastName: 'l', age: 50 });
   }
 }

@@ -14,7 +14,7 @@ export class PrimitiveProperty implements Property {
   }
 
   public set(instance: Model, value: any): void {
-    if (value === defaultValue.s) {
+    if (value === defaultValue.s || value === defaultValue.n) {
       return;
     }
     instance.instanceData.set(this.name, value);

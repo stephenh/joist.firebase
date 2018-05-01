@@ -60,6 +60,7 @@
         "no-parameter-reassignment": false,
         "no-backbone-get-set-outside-model": false,
         "max-func-body-length": false,
+        "mocha-no-side-effect-code": false,
         "no-any": false,
         "completed-docs": [
             false

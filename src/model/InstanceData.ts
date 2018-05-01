@@ -72,7 +72,11 @@ export class InstanceData {
     this.localAttributes[name] = value;
   }
 
-  public setAttributesFrom(object: { [key: string]: any }): void {
+  public setAttributesFrom(snapshot: { [key: string]: any }): void {
+    Object.keys(snapshot).forEach(k => {
+      log('Set from snapshot %s.%s to %s', this.model, k, snapshot[k]);
+      this.localAttributes[k] = snapshot[k];
+    });
     this.remoteAttributes = {};
   }
 

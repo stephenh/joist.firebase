@@ -48,7 +48,8 @@ export class Store {
     const mp = new ModelPromise<T>(
       record.id,
       record.instanceData.modelName,
-      (resolve, reject) => resolve(record));
+      (resolve, reject) => resolve(record),
+    );
     this.storeActiveRecord(mp);
     return record;
   }
@@ -56,10 +57,10 @@ export class Store {
   public findRecord<T extends Model>(recordClass: ModelClass<T>, id: string): ModelPromise<T> {
     const activeRecord = this.retrieveActiveRecord(recordClass, id);
     if (activeRecord) {
-      log('found existing record from store for id: %d', id);
+      log('Found existing record %s', activeRecord);
       return activeRecord;
     }
-    log('record not found for %d going to look it up', id);
+    log('Looking up %s#%s', recordClass.modelName, id);
     const record: T = new recordClass(this, { id } as any as Data<T>);
     const mp = this._linkToFirebase(record);
     this.storeActiveRecord(mp);
@@ -96,28 +97,31 @@ export class Store {
     const ref = this.database.ref(path);
     md.ref = ref;
 
-    return new ModelPromise<T>(record.id, md.modelName, (resolve, reject) => {
-      ref.on('value', (dataSnapshot: DataSnapshot | null) => {
-        log(`got data for ${record.id}`);
-        const result: any = dataSnapshot ? dataSnapshot.val() : null;
-        if (this._activeRecords[md.modelName] !== undefined && this._activeRecords[md.modelName][record.id] !== undefined) {
-          if (result !== null) {
-            md.setAttributesFrom(result);
-          } else {
-            if (md.isDeleted) {
-              log('received null data for deleted record, ignore it');
+    return new ModelPromise<T>(
+      record.id,
+      md.modelName,
+      (resolve, reject) => {
+        ref.on('value', (dataSnapshot: DataSnapshot | null) => {
+          log('Got data for %s', record);
+          const result: any = dataSnapshot != null ? dataSnapshot.val() : null;
+          if (this._activeRecords[md.modelName] !== undefined && this._activeRecords[md.modelName][record.id] !== undefined) {
+            if (result !== null) {
+              md.setAttributesFrom(result);
               resolve(record);
             } else {
-              reject(`record not found for key ${ref.key}`);
+              if (md.isDeleted) {
+                log('Received null data for deleted record, ignoring it');
+                resolve(record);
+              } else {
+                reject(`Record not found for key ${ref.key}`);
+              }
             }
+          } else {
+            log(`ignoring data received form ${record.id} that is no longer an active record`);
+            resolve(record);
           }
-          resolve(record);
-        } else {
-          log(`ignoring data received form ${record.id} that is no longer an active record`);
-          resolve(record);
-        }
+        });
       });
-    });
   }
 
   /**
@@ -203,9 +207,7 @@ export class Store {
   }
 
   private storeActiveRecord(promise: ModelPromise<Model>): void {
-    const id = promise.id;
-    const modelName = promise.modelName;
-    log('Storing %s', promise);
+    const { id, modelName } = promise;
     if (!(modelName in this._activeRecords)) {
       this._activeRecords[modelName] = {};
     }
