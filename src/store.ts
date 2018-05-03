@@ -17,6 +17,12 @@ export class Paths extends Map<string, string | number | null> {
   }
 }
 
+/**
+ * The store acts as our gateway to Firebase, as well as a local unit of work.
+ *
+ * There should be a single store instance per "thread", e.g. a dedicated
+ * unit of business logic "load data, doing something, save data".
+ */
 export class Store {
 
   public basePath: string;
@@ -39,11 +45,11 @@ export class Store {
     this._useUUID = (options && options.useUUID) || undefined;
   }
 
-  public createRecord<T extends Model>(recordClass: ModelClass<T>): T {
+  public createRecord<T extends Model>(recordClass: ModelClass<T>, data: Data<T>): T {
     // The constructor will automatically assign a v4 uuid if an id was not provided
-    const record = new recordClass(this, {} as any as Data<T>);
+    const record = new recordClass(this, data);
     record.instanceData.isNew = true;
-    log('Created new record %s:%d', recordClass, record.id);
+    log('Created new record %s', record);
     // Create an immediately-resolved promise so we can store it in our active records
     const mp = new ModelPromise<T>(
       record.id,
@@ -57,7 +63,7 @@ export class Store {
   public findRecord<T extends Model>(recordClass: ModelClass<T>, id: string): ModelPromise<T> {
     const activeRecord = this.retrieveActiveRecord(recordClass, id);
     if (activeRecord) {
-      log('Found existing record %s', activeRecord);
+      log('Found active record %s', activeRecord);
       return activeRecord;
     }
     log('Looking up %s#%s', recordClass.modelName, id);

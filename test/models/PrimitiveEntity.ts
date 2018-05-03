@@ -38,7 +38,11 @@ export class PrimitiveEntity extends Model {
     super(store, data);
   }
 
+  public static get newTestData(): Data<PrimitiveEntity> {
+    return { firstName: 'f', lastName: 'l', age: 50 };
+  }
+
   public static newTestInstance(store: Store): PrimitiveEntity {
-    return new PrimitiveEntity(store, { firstName: 'f', lastName: 'l', age: 50 });
+    return new PrimitiveEntity(store, PrimitiveEntity.newTestData);
   }
 }
