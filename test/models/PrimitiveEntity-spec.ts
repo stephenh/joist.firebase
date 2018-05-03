@@ -9,7 +9,7 @@ describe('PrimitiveEntity', () => {
   it('should be constructable directly without an id', () => {
     const db = new Mock();
     const store = new Store(db);
-    const pe = new PrimitiveEntity(store, { firstName: 'f', lastName: 'l' });
+    const pe = new PrimitiveEntity(store, { firstName: 'f', lastName: 'l', age: 1 });
     expect(pe.firstName).to.be.eq('f');
     expect(pe.lastName).to.be.eq('l');
     expect(pe.id).to.not.be.undefined;
@@ -18,6 +18,6 @@ describe('PrimitiveEntity', () => {
   it('should be constructable directly with an id', () => {
     const db = new Mock();
     const store = new Store(db);
-    const pe = new PrimitiveEntity(store, { id: 'existing', firstName: 'f', lastName: 'l' });
+    const pe = new PrimitiveEntity(store, { id: 'existing', firstName: 'f', lastName: 'l', age: 1 });
   });
 });

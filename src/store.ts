@@ -41,9 +41,9 @@ export class Store {
 
   public createRecord<T extends Model>(recordClass: ModelClass<T>): T {
     // The constructor will automatically assign a v4 uuid if an id was not provided
-    const record: T = new recordClass(this, {} as any as Data<T>);
+    const record = new recordClass(this, {} as any as Data<T>);
     record.instanceData.isNew = true;
-    log('created new record %s:%d', recordClass, record.id);
+    log('Created new record %s:%d', recordClass, record.id);
     // Create an immediately-resolved promise so we can store it in our active records
     const mp = new ModelPromise<T>(
       record.id,
@@ -72,7 +72,7 @@ export class Store {
    * it will be returned, otherwise null will be returned.
    */
   public peekRecord<T extends Model>(recordClass: ModelClass<T>, id: string): T | undefined {
-    log(`peeking for existing record ${id}`);
+    log('Peeking for active record %s:%s', recordClass, id);
     const mp = this.retrieveActiveRecord(recordClass, id);
     if (mp) {
       return mp.instance;
@@ -86,39 +86,26 @@ export class Store {
    * @param record The record to (re) link to firebase
    */
   public _linkToFirebase<T extends Model>(record: T): ModelPromise<T> {
+    const { id, instanceData: md } = record;
     // If the record is already has an active reference then stop listening to further updates
-    const md = record.instanceData;
-    if (md.ref !== undefined && md.ref !== null) {
-      md.ref.off();
-    }
-
-    const path: string = record.instanceData.fullInstancePath;
-    log(`looking for record at path ${path}`);
-    const ref = this.database.ref(path);
-    md.ref = ref;
-
+    md.ref.off();
+    log('Linking %s', md.fullInstancePath);
     return new ModelPromise<T>(
-      record.id,
+      id,
       md.modelName,
       (resolve, reject) => {
-        ref.on('value', (dataSnapshot: DataSnapshot | null) => {
-          log('Got data for %s', record);
+        md.ref.on('value', (dataSnapshot: DataSnapshot | null) => {
           const result: any = dataSnapshot != null ? dataSnapshot.val() : null;
-          if (this._activeRecords[md.modelName] !== undefined && this._activeRecords[md.modelName][record.id] !== undefined) {
-            if (result !== null) {
-              md.setAttributesFrom(result);
+          if (result) {
+            md.setAttributesFrom(result);
+            resolve(record);
+          } else {
+            if (md.isDeleted) {
+              log('Received null data for deleted record, ignoring it');
               resolve(record);
             } else {
-              if (md.isDeleted) {
-                log('Received null data for deleted record, ignoring it');
-                resolve(record);
-              } else {
-                reject(`Record not found for key ${ref.key}`);
-              }
+              reject(`Record not found for key ${md.ref.key}`);
             }
-          } else {
-            log(`ignoring data received form ${record.id} that is no longer an active record`);
-            resolve(record);
           }
         });
       });
@@ -201,7 +188,7 @@ export class Store {
     try {
       await this.database.ref('/').update(updates);
     } catch (error) {
-      log(`Failed to save updates: ${JSON.stringify(updates)} ${error} ${error.stack}`);
+      log('Failed to save updates: %s, data: %o', error, updates);
       throw error;
     }
   }

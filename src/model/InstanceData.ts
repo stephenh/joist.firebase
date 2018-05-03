@@ -16,20 +16,21 @@ export class InstanceData {
 
   public readonly model: Model;
   public readonly store: Store;
+  public readonly id: string;
+  public readonly ref: Reference;
   public isNew: boolean = false;
   public isDeleted: boolean = false;
-  public ref?: Reference;
   public remoteAttributes: { [key: string]: any } = {}; // The state of the object in Firebase (as last seen)
   public localAttributes: { [key: string]: any } = {}; // Any local attribute changes that have not yet been submitted
   public atomicallyLinked: Model[] = []; // Other records that will be saved when this record is saved
-  public embeddedRecords: { [attribute: string]: { [id: string]: Model } } = {}; // Any embedded records that have been accessed via their hasMany or belongsTo relationship - This is used to track future updates
-  public embeddedIn: Model | null = null; // The record this embedded record is attached to
   private readonly schema: Schema;
 
-  constructor(store: Store, model: Model) {
+  constructor(store: Store, model: Model, id?: string) {
     this.store = store;
     this.model = model;
     this.schema = Schema.getSchema(model);
+    this.id = id || store.newKey(this.fullModelsPath);
+    this.ref = store.database.ref(`${this.fullModelsPath}/${this.id}`);
   }
 
   /** Returns the path to the models in firebase, e.g. /basePath/blogs. */
@@ -62,7 +63,7 @@ export class InstanceData {
   }
 
   public get(name: string): any {
-    const value = this.localAttributes[name];
+    const value = this.localAttributes[name] || this.remoteAttributes[name];
     log('Get %s.%s as %s', this.model, name, value);
     return value;
   }
@@ -73,28 +74,26 @@ export class InstanceData {
   }
 
   public setAttributesFrom(snapshot: { [key: string]: any }): void {
+    this.remoteAttributes = {};
     Object.keys(snapshot).forEach(k => {
       log('Set from snapshot %s.%s to %s', this.model, k, snapshot[k]);
-      this.localAttributes[k] = snapshot[k];
+      this.remoteAttributes[k] = snapshot[k];
     });
-    this.remoteAttributes = {};
   }
 
   /** Record completed saving. Called by the store. */
   public async didSave(): Promise<void> {
     // Ensure this record is linked to firebase
-    // await this.store._linkToFirebase(this);
+    log('Save complete, linking %s to firebase', this.model);
+    await this.store._linkToFirebase(this.model);
     this.isNew = false;
     // Clear local attributes as change has been saved
     this.localAttributes = {};
   }
 
   public willUnload(): void {
-    if (this.ref !== undefined && this.ref !== null) {
-      log(`removing ref for ${this.model.id}`);
-      this.ref.off();
-      this.ref = undefined;
-    }
+    log(`Turning off ref for ${this.model.id}`);
+    this.ref.off();
   }
 
   public async rawFirebaseValue(attribute: string): Promise<any> {
