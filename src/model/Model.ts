@@ -15,7 +15,7 @@ export abstract class Model {
   public static pathPrefixGroup: string | undefined;
 
   // data would be a nicer/shorter name but more likely to collide with entity fields
-  public readonly instanceData: InstanceData;
+  public readonly instanceData: InstanceData<this>;
 
   constructor(store: Store, data: Data<Model>) {
     this.instanceData = new InstanceData(store, this);

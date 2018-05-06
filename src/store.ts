@@ -68,7 +68,7 @@ export class Store {
     }
     log('Looking up %s#%s', recordClass.modelName, id);
     const record: T = new recordClass(this, { id } as any as Data<T>);
-    const mp = this._linkToFirebase(record);
+    const mp = record.instanceData.promise;
     this.storeActiveRecord(mp);
     return mp;
   }
@@ -88,41 +88,14 @@ export class Store {
   }
 
   /**
-   * Links a record to it's firebase reference, required when saving a newly created record, or for otherwise forcing a refresh
-   * @param record The record to (re) link to firebase
-   */
-  public _linkToFirebase<T extends Model>(record: T): ModelPromise<T> {
-    const { id, instanceData: md } = record;
-    // If the record is already has an active reference then stop listening to further updates
-    md.ref.off();
-    log('Linking %s', md.fullInstancePath);
-    return new ModelPromise<T>(
-      id,
-      md.modelName,
-      (resolve, reject) => {
-        md.ref.on('value', (dataSnapshot: DataSnapshot | null) => {
-          const result: any = dataSnapshot != null ? dataSnapshot.val() : null;
-          if (result) {
-            md.setAttributesFrom(result);
-            resolve(record);
-          } else {
-            if (md.isDeleted) {
-              log('Received null data for deleted record, ignoring it');
-              resolve(record);
-            } else {
-              reject(`Record not found for key ${md.ref.key}`);
-            }
-          }
-        });
-      });
-  }
-
-  /**
    * Unloads the record from the store. This will cause the record to be destroyed and freed up for garbage collection.
    */
   public unloadRecord(record: Model): void {
     record.instanceData.willUnload();
-    delete this._activeRecords[record.instanceData.modelName][record.id];
+    const records = this._activeRecords[record.instanceData.modelName];
+    if (records) {
+      delete records[record.id];
+    }
   }
 
   /** Saves all records atomically. */

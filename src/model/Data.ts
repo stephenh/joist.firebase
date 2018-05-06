@@ -5,7 +5,7 @@ import { InstanceData } from './';
 export type PropertyNames<T> = { [K in keyof T]: T[K] extends Function ? never : K }[keyof T];
 
 // And ignore our internal metdata property
-export type NotInternalNames<T> = { [K in keyof T]: T[K] extends InstanceData ? never : K }[keyof T];
+export type NotInternalNames<T> = { [K in keyof T]: T[K] extends InstanceData<any> ? never : K }[keyof T];
 
 // And ignore the id property
 export type NotId<T> = { [K in keyof T]: K extends 'id' ? never : K }[keyof T];

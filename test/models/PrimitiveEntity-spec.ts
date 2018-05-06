@@ -12,7 +12,7 @@ describe('PrimitiveEntity', () => {
     const pe = new PrimitiveEntity(store, { firstName: 'f', lastName: 'l', age: 1 });
     expect(pe.firstName).to.be.eq('f');
     expect(pe.lastName).to.be.eq('l');
-    expect(pe.id).to.not.be.undefined;
+    expect(pe.id).to.not.eq(undefined);
   });
 
   it('should be constructable directly with an id', () => {

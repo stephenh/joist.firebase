@@ -1,8 +1,8 @@
 
 import { Schema } from '@src/schema';
 import { Paths } from '@src/store';
-import { Reference } from '../firebase';
-import { log as parentLog, Model, Store } from './';
+import { DataSnapshot, Reference } from '../firebase';
+import { log as parentLog, Model, ModelPromise, Store } from './';
 
 const log = parentLog.child('instanceData');
 
@@ -12,9 +12,9 @@ const log = parentLog.child('instanceData');
  * These methods should be considered internal implementation details
  * and not called by client code.
  */
-export class InstanceData {
+export class InstanceData<T extends Model> {
 
-  public readonly model: Model;
+  public readonly model: T;
   public readonly store: Store;
   public readonly id: string;
   public readonly ref: Reference;
@@ -23,14 +23,31 @@ export class InstanceData {
   public remoteAttributes: { [key: string]: any } = {}; // The state of the object in Firebase (as last seen)
   public localAttributes: { [key: string]: any } = {}; // Any local attribute changes that have not yet been submitted
   public atomicallyLinked: Model[] = []; // Other records that will be saved when this record is saved
+  public readonly promise: ModelPromise<T>;
   private readonly schema: Schema;
 
-  constructor(store: Store, model: Model, id?: string) {
+  constructor(store: Store, model: T, id?: string) {
     this.store = store;
     this.model = model;
     this.schema = Schema.getSchema(model);
     this.id = id || store.newKey(this.fullModelsPath);
     this.ref = store.database.ref(`${this.fullModelsPath}/${this.id}`);
+    this.promise = new ModelPromise<T>(this.id, this.modelName, (resolve, reject) => {
+      this.ref.on('value', (dataSnapshot: DataSnapshot | null) => {
+        const result: any = dataSnapshot != null ? dataSnapshot.val() : null;
+        if (result) {
+          this.setAttributesFrom(result);
+          resolve(this.model);
+        } else {
+          if (this.isDeleted) {
+            log('Received null data for deleted record, ignoring it');
+            resolve(this.model);
+          } else {
+            reject(`Record not found for ${this}`);
+          }
+        }
+      });
+    });
   }
 
   /** Returns the path to the models in firebase, e.g. /basePath/blogs. */
@@ -75,19 +92,15 @@ export class InstanceData {
 
   public setAttributesFrom(snapshot: { [key: string]: any }): void {
     this.remoteAttributes = {};
+    log('Got snapshot %o', snapshot);
     Object.keys(snapshot).forEach(k => {
-      log('Set from snapshot %s.%s to %s', this.model, k, snapshot[k]);
       this.remoteAttributes[k] = snapshot[k];
     });
   }
 
   /** Record completed saving. Called by the store. */
   public async didSave(): Promise<void> {
-    // Ensure this record is linked to firebase
-    log('Save complete, linking %s to firebase', this.model);
-    await this.store._linkToFirebase(this.model);
     this.isNew = false;
-    // Clear local attributes as change has been saved
     this.localAttributes = {};
   }
 
@@ -97,7 +110,7 @@ export class InstanceData {
   }
 
   public async rawFirebaseValue(attribute: string): Promise<any> {
-    const snapshot = await this.store.database.ref(this.fullInstancePath).once('value');
+    const snapshot = await this.ref.once('value');
     const val = snapshot.val();
     return val[attribute];
   }
