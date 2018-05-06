@@ -24,7 +24,11 @@ export interface Reference {
 
   push(value?: any, onComplete?: (a: Error | null) => any): Reference;
 
-  off(): void;
+  off(
+    eventType?: string,
+    callback?: (a: DataSnapshot | null, b?: string) => any,
+    context?: Object | null
+  ): void;
 
   on(
     eventType: string,
