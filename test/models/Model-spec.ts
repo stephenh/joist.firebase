@@ -18,7 +18,7 @@ describe('Model', () => {
     pe.unloadRecord();
   });
 
-  it('should be read from by firebase', async () => {
+  it('should be read from firebase', async () => {
     const db = new Mock().useDeterministicIds();
     const d: Data<PrimitiveEntity> = { firstName: 'ff', lastName: 'll', age: 51 };
     db.ref('/primitive_entities/id1').setSync(d);

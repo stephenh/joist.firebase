@@ -32,7 +32,10 @@ describe('Store', () => {
     const store = new Store(db);
     // given a new instance
     const pe = store.createRecord(PrimitiveEntity, PrimitiveEntity.newTestData);
-    // then it is not stored in the db immediately
+    // then the model's promise is resolved
+    expect(pe.instanceData.promise.instance).to.not.eq(undefined);
+    expect(pe.instanceData.isNew).to.eq(true);
+    // and it is not stored in the db immediately
     expect(db.db).to.deep.eq({});
     // until save is called
     pe.save();

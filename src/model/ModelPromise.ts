@@ -15,11 +15,20 @@ export class ModelPromise<T extends Model> implements PromiseLike<T> {
   constructor(
     id: string,
     modelName: string,
+    instanceIfNew: T | undefined,
     executor: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void) {
     this.id = id;
     this.modelName = modelName;
     this.promise = new Promise<T>(executor);
-    this.then(i => { this._instance = i; });
+    // If this is a newly-created record, we don't need to wait for Firebase to return.
+    // Note that technically our `this.then` should handle this, because we immediately
+    // resolve new-instance promises, but for some reason the node/etc. runtime doesn't
+    // immediately evaluate the `this.then` lambda, even though the promise is already
+    // resolved.
+    if (instanceIfNew) {
+      this._instance = instanceIfNew;
+    }
+    this.then(i => this._instance = i);
   }
 
   public then<TResult1 = T, TResult2 = never>(

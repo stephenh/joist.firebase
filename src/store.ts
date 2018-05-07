@@ -48,15 +48,8 @@ export class Store {
   public createRecord<T extends Model>(recordClass: ModelClass<T>, data: Data<T>): T {
     // The constructor will automatically assign a v4 uuid if an id was not provided
     const record = new recordClass(this, data);
-    record.instanceData.isNew = true;
     log('Created new record %s', record);
-    // Create an immediately-resolved promise so we can store it in our active records
-    const mp = new ModelPromise<T>(
-      record.id,
-      record.instanceData.modelName,
-      (resolve, reject) => resolve(record),
-    );
-    this.storeActiveRecord(mp);
+    this.storeActiveRecord(record.instanceData.promise);
     return record;
   }
 
@@ -67,7 +60,7 @@ export class Store {
       return activeRecord;
     }
     log('Looking up %s#%s', recordClass.modelName, id);
-    const record: T = new recordClass(this, { id } as any as Data<T>);
+    const record = new recordClass(this, { id } as any as Data<T>);
     const mp = record.instanceData.promise;
     this.storeActiveRecord(mp);
     return mp;

@@ -18,10 +18,11 @@ export abstract class Model {
   public readonly instanceData: InstanceData<this>;
 
   constructor(store: Store, data: Data<Model>) {
-    this.instanceData = new InstanceData(store, this);
-    const copy = { ...data };
+    this.instanceData = new InstanceData<this>(store, this, data as Data<this>);
     // InstanceData will have pulled out id already, so remove it as it's not writeable
+    const copy = { ...data };
     delete copy.id;
+    // These copies will still go through our setters and end up in instanceData.localAttributes
     Object.assign(this, copy);
     log('Instantiated %s', this);
   }
