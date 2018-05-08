@@ -1,17 +1,17 @@
 
 import { ModelClass } from '@src/model';
 import { PrimitiveProperty, Schema } from '@src/schema';
-import { BelongsToProperty } from '@src/schema/BelongsToProperty';
+import { HasOneProperty } from '@src/schema/HasOneProperty';
 import 'reflect-metadata';
 import { log as parentLog } from './';
 
 const log = parentLog.child('property');
 
-export function belongsTo(parentClass: ModelClass<any>): PropertyDecorator {
+export function hasOne(parentClass: ModelClass<any>): PropertyDecorator {
   return (proto: Object, name: string | symbol) => {
     const type: string = Reflect.getMetadata('design:type', proto, name).name;
     const schema = Schema.getSchema(proto);
-    const prop = new BelongsToProperty(name, type, parentClass);
+    const prop = new HasOneProperty(name, type, parentClass);
     schema.properties.push(prop);
     log('Defining %o on %o', prop, proto);
     Object.defineProperty(proto, name, {

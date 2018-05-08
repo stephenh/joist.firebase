@@ -3,7 +3,7 @@ import { Model, ModelClass, ModelPromise } from '@src/model';
 import { defaultValue, Property } from '@src/schema';
 import { log } from './';
 
-export class BelongsToProperty implements Property {
+export class HasOneProperty implements Property {
   public name: string;
   private readonly parentClass: ModelClass<any>;
 
