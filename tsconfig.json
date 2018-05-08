@@ -21,8 +21,7 @@
         "outDir": "./dist",
         "typeRoots": [
             "./node_modules/@types"
-        ],
-        "watch": true
+        ]
     },
     "exclude": [
         "node_modules"

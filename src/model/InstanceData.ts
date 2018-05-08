@@ -30,12 +30,13 @@ export class InstanceData<T extends Model> {
   constructor(store: Store, model: T, data: Data<T>) {
     this.store = store;
     this.model = model;
-    this.schema = Schema.getSchema(model);
+    this.schema = Schema.getSchemaForInstance(model);
     // There are three potential cases here:
     // 1) findRecord for an existing record, we get passed what should be an existing Firebase id
     // 2) createRecord for a new record, with a user-specific key
     // 3) createRecord for a new record, with no key given, so we get one from the store
-    this.id = data.id || store.newKey(this.fullModelsPath);
+    const providedId: string | undefined = data.id;
+    this.id = providedId ? providedId : store.newKey(this.fullModelsPath);
     // All existing records are instantiated with just data={id} (via an 'as any' hack)
     this.isNew = !_.isEqual(Object.keys(data), ['id']);
     this.ref = store.database.ref(`${this.fullModelsPath}/${this.id}`);
@@ -98,7 +99,7 @@ export class InstanceData<T extends Model> {
   }
 
   public set(name: string, value: any): void {
-    log('Set %s.%s to %s', this.model, name, value);
+    log('Set %s.%s to %o', this.model, name, value);
     this.localAttributes[name] = value;
   }
 
