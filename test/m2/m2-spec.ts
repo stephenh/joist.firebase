@@ -2,12 +2,10 @@
 import { ModelPromise, Store } from '@src/model';
 import { expect } from 'chai';
 import { Mock } from 'firemock';
-import { log } from '../';
 import { Child } from './Child';
 import { Parent } from './Parent';
-import { PrimitiveEntity } from './PrimitiveEntity';
 
-describe('Child', () => {
+describe('m2 Parent/Child with one-way child -> parent', () => {
   it('should be constructable with a parent instance', async () => {
     const db = new Mock().useDeterministicIds();
     const store = new Store(db);
