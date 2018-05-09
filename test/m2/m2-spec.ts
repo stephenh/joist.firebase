@@ -5,7 +5,7 @@ import { Mock } from 'firemock';
 import { Child } from './Child';
 import { Parent } from './Parent';
 
-describe('m2 Parent/Child with one-way child -> parent', () => {
+describe('m2 One-to-many with one-way child -> parent', () => {
   it('should be constructable with a parent instance', async () => {
     const db = new Mock().useDeterministicIds();
     const store = new Store(db);

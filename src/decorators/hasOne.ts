@@ -6,10 +6,14 @@ import { log as parentLog, property } from './';
 
 const log = parentLog.child('hasOne');
 
+export interface HasOneOptions {
+  inverse?: string;
+}
+
 /** Accepts/returns a model (or model promise) and store it as the key. */
-export function hasOne(parentClass: ModelClass<any>): PropertyDecorator {
+export function hasOne(parentClass: ModelClass<any>, options?: HasOneOptions): PropertyDecorator {
   return (proto: Object, name: string | symbol) => {
-    const prop = new HasOneProperty(name, parentClass);
+    const prop = new HasOneProperty(name, parentClass, options || {});
     Schema.getSchema(proto).properties.push(prop);
     log('Defining %s on %o', prop, proto);
     Object.defineProperty(proto, name, {

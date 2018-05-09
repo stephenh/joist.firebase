@@ -19,4 +19,8 @@ export class PrimitiveProperty implements Property {
     }
     instance.instanceData.set(this.name, value);
   }
+
+  public toString(): string {
+    return `property(${this.name})`;
+  }
 }
