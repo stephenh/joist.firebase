@@ -7,7 +7,7 @@ export class HasOneProperty implements Property {
   public name: string;
   private readonly parentClass: ModelClass<any>;
 
-  constructor(name: string | symbol, type: string, parentClass: ModelClass<any>) {
+  constructor(name: string | symbol, parentClass: ModelClass<any>) {
     this.name = name.toString();
     this.parentClass = parentClass;
   }
@@ -31,5 +31,9 @@ export class HasOneProperty implements Property {
     } else {
       throw new Error(`Unexpected belongs to value: ${value}`);
     }
+  }
+
+  public toString(): string {
+    return `hasOne(${this.name})`;
   }
 }
