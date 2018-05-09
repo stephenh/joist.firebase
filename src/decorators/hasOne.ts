@@ -2,9 +2,9 @@
 import { ModelClass } from '@src/model';
 import { Schema } from '@src/schema';
 import { HasOneProperty } from '@src/schema/HasOneProperty';
-import { log as parentLog } from './';
+import { log as parentLog, property } from './';
 
-const log = parentLog.child('property');
+const log = parentLog.child('hasOne');
 
 /** Accepts/returns a model (or model promise) and store it as the key. */
 export function hasOne(parentClass: ModelClass<any>): PropertyDecorator {

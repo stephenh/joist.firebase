@@ -3,7 +3,7 @@ import { Store } from '@src/model';
 import { Schema } from '@src/schema';
 import { expect } from 'chai';
 import { Mock } from 'firemock';
-import { PrimitiveEntity } from './models/PrimitiveEntity';
+import { PrimitiveEntity } from './m1/PrimitiveEntity';
 
 describe('Store', () => {
   it('should save simple entities', () => {

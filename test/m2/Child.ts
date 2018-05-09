@@ -1,13 +1,11 @@
 
-import { hasOne, property } from '@src/decorators';
-import { Data, Model, ModelPromise, Store } from '@src/model';
+import { hasOne, model, property } from '@src/decorators';
+import { Model, ModelPromise } from '@src/model';
 import { defaultValue } from '@src/schema';
 import { Parent } from './Parent';
 
+@model({ path: 'children' })
 export class Child extends Model {
-
-  public static modelName: string = 'child';
-  public static modelPath: string = 'children';
 
   @property() public name: string = defaultValue.s;
 

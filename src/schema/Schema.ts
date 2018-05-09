@@ -5,6 +5,9 @@ import { log as parentLog, Property } from '@src/schema';
 const log = parentLog.child('schema');
 
 export class Schema {
+
+  public modelName?: string;
+  public modelPath?: string;
   public properties: Property[] = [];
 
   public static getSchemaForInstance(instance: Model): Schema {

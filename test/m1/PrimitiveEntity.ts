@@ -1,12 +1,11 @@
 
-import { property } from '@src/decorators';
+import { model, property } from '@src/decorators';
 import { Data, Model, Store } from '@src/model';
 import { defaultValue } from '@src/schema';
 
-export class PrimitiveEntity extends Model {
 
-  public static modelName: string = 'primitive_entity';
-  public static modelPath: string = 'primitive_entities';
+@model({ name: 'primitive_entity', path: 'primitive_entities' })
+export class PrimitiveEntity extends Model {
 
   @property() public firstName: string = defaultValue.s;
 

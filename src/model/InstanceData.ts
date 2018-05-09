@@ -129,14 +129,20 @@ export class InstanceData<T extends Model> {
   }
 
   public get modelName(): string {
-    return (this.model.constructor as typeof Model).modelName;
+    if (!this.schema.modelName) {
+      throw new Error('Missing @model annotation');
+    }
+    return this.schema.modelName;
   }
 
   public get modelPath(): string {
-    return (this.model.constructor as typeof Model).modelPath;
+    if (!this.schema.modelPath) {
+      throw new Error('Missing @model annotation');
+    }
+    return this.schema.modelPath;
   }
 
   public get pathPrefixGroup(): string | undefined {
-    return (this.model.constructor as typeof Model).pathPrefixGroup;
+    return undefined; // (this.model.constructor as typeof Model).pathPrefixGroup;
   }
 }

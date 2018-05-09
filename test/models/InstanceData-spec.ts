@@ -4,7 +4,7 @@ import { Paths } from '@src/store';
 import { expect } from 'chai';
 import { Mock } from 'firemock';
 import { log } from '../';
-import { PrimitiveEntity } from './PrimitiveEntity';
+import { PrimitiveEntity } from '../m1/PrimitiveEntity';
 
 describe('InstanceData', () => {
   it('should return primitive paths', () => {

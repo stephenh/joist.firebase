@@ -3,7 +3,7 @@ import { Data, Store } from '@src/model';
 import { Log } from '@src/utils/Log';
 import { expect } from 'chai';
 import { Mock } from 'firemock';
-import { PrimitiveEntity } from './PrimitiveEntity';
+import { PrimitiveEntity } from '../m1/PrimitiveEntity';
 
 const log = Log.create('joist:test');
 

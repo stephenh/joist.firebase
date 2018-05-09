@@ -9,10 +9,8 @@ export interface ModelClass<T> {
 /** Base class for our model entities. */
 export abstract class Model {
 
+  // Defined automatically by the @model decorator
   public static modelName: string;
-  public static modelPath: string;
-  /** Allow a dynamic 'chroot' based on the group's prefix as set in the store. */
-  public static pathPrefixGroup: string | undefined;
 
   // data would be a nicer/shorter name but more likely to collide with entity fields
   public readonly instanceData: InstanceData<this>;
