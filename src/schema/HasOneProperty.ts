@@ -42,9 +42,7 @@ export class HasOneProperty implements Property {
     // Resolve the ModelPromise/Model down to just an id
     let id: string;
     let shouldPercolate = true;
-    if (value instanceof ModelPromise) {
-      id = value.id;
-    } else if (value instanceof Model) {
+    if (value instanceof ModelPromise || value instanceof Model) {
       id = value.id;
     } else if (value instanceof PercolatedId) {
       id = value.id;
