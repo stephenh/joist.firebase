@@ -1,6 +1,5 @@
 
 import { ModelPromise, Store } from '@src/model';
-import { expect } from 'chai';
 import { Mock } from 'firemock';
 import { Bar } from './Bar';
 import { Foo } from './Foo';
@@ -11,16 +10,16 @@ describe('m3 One-to-one with two-way connection between entities', () => {
     const store = new Store(db);
     // given a new foo
     const p: Foo = store.createRecord(Foo, { name: 'p' });
-    // then we can create a child with it
+    // then we can create a bar with it
     const c = store.createRecord(Bar, { name: 'c', foo: p });
     // and both are stored in the db
     await store.saveAll();
-    expect(db.db).to.deep.eq({
+    expect(db.db).toEqual({
       foo: { id1: { name: 'p', bar: 'id2' }},
       bar: { id2: { name: 'c', foo: 'id1' }}
     });
     // and we can read back out the foo
-    expect(c.foo.instance).to.eq(p);
+    expect(c.foo.instance).toEqual(p);
   });
 
   it('should be constructable with a promise', async () => {
@@ -34,11 +33,11 @@ describe('m3 One-to-one with two-way connection between entities', () => {
     const c = store.createRecord(Bar, { name: 'c', foo: mp });
     // and both are stored in the db
     await store.saveAll();
-    expect(db.db).to.deep.eq({
+    expect(db.db).toEqual({
       foo: { id1: { name: 'p', bar: 'id2' }},
       bar: { id2: { name: 'c', foo: 'id1' }}
     });
     // and we can read back out the parent
-    expect(c.foo).to.eq(mp);
+    expect(c.foo).toEqual(mp);
   });
 });

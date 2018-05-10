@@ -1,7 +1,6 @@
 
 import { Store } from '@src/model';
 import { Paths } from '@src/store';
-import { expect } from 'chai';
 import { Mock } from 'firemock';
 import { log } from '../';
 import { PrimitiveEntity } from '../m1/PrimitiveEntity';
@@ -13,7 +12,7 @@ describe('InstanceData', () => {
     const pe = PrimitiveEntity.newTestInstance(store);
     const paths = new Paths();
     pe.instanceData.addPaths(paths);
-    expect(paths.toObject()).to.deep.eq({
+    expect(paths.toObject()).toEqual({
       '/primitive_entities/id1/age': 50,
       '/primitive_entities/id1/firstName': 'f',
       '/primitive_entities/id1/lastName': 'l',
