@@ -32,7 +32,6 @@
     "firebase-admin": "^5.1.0",
     "firemock": "^0.15.15",
     "jest": "^22.4.3",
-    "nyc": "^11.1.0",
     "ts-jest": "^22.4.5",
     "tslint": "^5.5.0",
     "tslint-microsoft-contrib": "^5.0.1",
